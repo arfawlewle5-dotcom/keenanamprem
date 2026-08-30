@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KEENAN • Alight Motion Activation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    }
+    :root {
+      --bg: #05060a;
+      --line: rgba(255,255,255,.07);
+      --line2: rgba(255,255,255,.12);
+      --text: #f4f7ff;
+      --muted: #8b93a7;
+      --muted2: #626a7e;
+      --blue: #3b82f6;
+      --green: #2dd47b;
+      --red: #ff5c67;
+      --yellow: #f5c451;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      background: var(--bg);
+      overflow-x: hidden;
+      position: relative;
+    }
+    .video-bg-wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #05060a;
+    }
+    .video-bg-wrap video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      filter: brightness(0.7) saturate(1.1);
+    }
+    .video-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 75% 5%, rgba(59,130,246,.15), transparent 28%),
+        radial-gradient(circle at 15% 80%, rgba(59,130,246,.08), transparent 25%),
+        rgba(0,0,0,.45);
+      pointer-events: none;
+    }
+    .background-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .22;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 70px 70px;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+      z-index: 1;
+    }
+
+    /* ===== APP ===== */
+    .app {
+      width: min(1500px, 100%);
+      min-height: 100vh;
+      margin: auto;
+      display: flex;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 250px;
+      min-height: 100vh;
+      border-right: 1px solid var(--line);
+      padding: 28px 18px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      background: rgba(5,6,10,.72);
+      backdrop-filter: blur(24px);
+      display: flex;
+      flex-direction: column;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 8px 28px;
+    }
+    .logo-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+      box-shadow: 0 12px 35px rgba(59,130,246,.25);
+    }
+    .logo-mark svg { width: 22px; }
+    .logo-text strong { display: block; font-size: 14px; letter-spacing: .3px; }
+    .logo-text span {
+      display: block;
+      color: var(--muted2);
+      font-size: 10px;
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    /* ===== PROFIL (avatar diperbesar) ===== */
+    .dev-profile-wrap {
+      position: relative;
+      margin-top: 8px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 6px 0;
+    }
+    .dev-profile-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      width: 100%;
+      background: transparent;
+      border: 0;
+      color: inherit;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-align: left;
+    }
+    .dev-profile-btn:hover { background: rgba(255,255,255,.04); }
+    .dev-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(59,130,246,.3);
+      flex-shrink: 0;
+    }
+    .dev-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .dev-info strong {
+      display: block;
+      font-size: 13px;
+      color: #fff;
+    }
+    .dev-info span {
+      font-size: 10px;
+      color: var(--muted2);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+    .dev-profile-btn .arrow {
+      margin-left: auto;
+      color: var(--muted2);
+      font-size: 14px;
+      transition: transform .2s;
+    }
+    .dev-profile-btn.open .arrow { transform: rotate(180deg); }
+
+    .dev-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: rgba(10,12,18,.96);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--line2);
+      border-radius: 14px;
+      padding: 8px 0;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0,0,0,.6);
+      z-index: 100;
+    }
+    .dev-dropdown.show { display: flex; }
+    .dev-dropdown a {
+      padding: 10px 16px;
+      color: #dce2f0;
+      text-decoration: none;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background .2s;
+      border-radius: 8px;
+      margin: 0 6px;
+    }
+    .dev-dropdown a:hover { background: rgba(59,130,246,.12); color: #fff; }
+    .dev-dropdown a svg { width: 16px; color: #3b82f6; }
+
+    .menu-title {
+      color: #51586a;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      padding: 0 11px;
+      margin: 18px 0 8px;
+    }
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: #737b8e;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 13px;
+      border-radius: 13px;
+      text-align: left;
+      transition: .2s;
+    }
+    .nav button:hover {
+      background: rgba(255,255,255,.04);
+      color: #dfe5f5;
+    }
+    .nav button.active {
+      background: linear-gradient(90deg, rgba(59,130,246,.15), rgba(59,130,246,.04));
+      color: #fff;
+      border: 1px solid rgba(59,130,246,.12);
+    }
+    .nav button svg { width: 17px; }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    /* ===== MUSIC CONTROL ===== */
+    .music-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,.03);
+      border-radius: 30px;
+      border: 1px solid var(--line);
+      margin-bottom: 10px;
+    }
+    .music-control button {
+      background: none;
+      border: 0;
+      color: #8b93a7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      transition: .2s;
+      cursor: pointer;
+      font-size: 16px;
+      background: rgba(255,255,255,.05);
+    }
+    .music-control button:hover {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+    }
+    .music-control .track-name {
+      flex: 1;
+      font-size: 10px;
+      color: #888fa3;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .music-btn-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .api-mini {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.025);
+    }
+    .api-mini-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #777f91;
+    }
+    .api-state {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #cfd6e6;
+    }
+    .api-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(45,212,123,.5);
+    }
+    .api-dot.offline { background: var(--red); box-shadow: none; }
+    .api-mini small { display: block; color: #4f5668; margin-top: 8px; }
+
+    /* ===== MAIN ===== */
+    .main {
+      flex: 1;
+      min-width: 0;
+      padding: 24px 34px 50px;
+    }
+
+    /* ===== MOBILE HEADER ===== */
+    .mobile-header {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .mobile-header .left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .mobile-header .left .logo-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+    }
+
+    .mobile-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+      padding: 4px 12px 4px 8px;
+      border-radius: 30px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.02);
+      transition: .2s;
+    }
+    .mobile-profile:hover { background: rgba(255,255,255,.05); }
+    .mobile-profile .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1.5px solid rgba(59,130,246,.3);
+    }
+    .mobile-profile .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .mobile-profile .name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .mobile-music {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255,255,255,.03);
+      border-radius: 30px;
+      border: 1px solid var(--line);
+      padding: 2px 6px 2px 10px;
+    }
+    .mobile-music .track {
+      font-size: 9px;
+      color: #888fa3;
+      max-width: 70px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .mobile-music button {
+      background: none;
+      border: 0;
+      color: #8b93a7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      transition: .2s;
+      cursor: pointer;
+      font-size: 14px;
+      background: rgba(255,255,255,.05);
+    }
+    .mobile-music button:hover {
+      background: rgba(255,255,255,.12);
+      color: #fff;
+    }
+
+    .topbar {
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 35px;
+    }
+    .breadcrumb {
+      color: #666e81;
+      font-size: 12px;
+    }
+    .breadcrumb strong { color: #cdd4e4; font-weight: 500; }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .top-button {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.025);
+      color: #81899c;
+      display: grid;
+      place-items: center;
+    }
+    .top-button:hover {
+      color: white;
+      background: rgba(255,255,255,.06);
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.5fr .8fr;
+      gap: 30px;
+      margin-bottom: 28px;
+    }
+    .hero-copy { padding: 20px 0; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #92a5e8;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.8px;
+      margin-bottom: 16px;
+    }
+    .eyebrow span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #3b82f6;
+      box-shadow: 0 0 12px #3b82f6;
+    }
+    .hero h1 {
+      font-size: clamp(36px,5vw,64px);
+      line-height: 1.02;
+      letter-spacing: -3px;
+      max-width: 780px;
+      font-weight: 700;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(100deg, #60a5fa, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      max-width: 650px;
+      color: #747d91;
+      line-height: 1.8;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 10px;
+      align-self: end;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.025);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .stat span {
+      display: block;
+      color: #555d70;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 20px;
+      margin-top: 7px;
+    }
+
+    /* ===== WORKSPACE ===== */
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) 330px;
+      gap: 18px;
+    }
+
+    .activation {
+      border: 1px solid var(--line);
+      background: rgba(10,12,18,.82);
+      border-radius: 28px;
+      overflow: hidden;
+    }
+    .activation-head {
+      padding: 24px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+    .activation-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .activation-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: rgba(59,130,246,.1);
+      color: #60a5fa;
+    }
+    .activation-title h2 { font-size: 16px; font-weight: 600; }
+    .activation-title p {
+      color: #565e70;
+      font-size: 11px;
+      margin-top: 3px;
+    }
+    .session-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #747c8f;
+      font-size: 10px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 30px;
+    }
+    .session-badge i {
+      width: 6px;
+      height: 6px;
+      background: #596275;
+      border-radius: 50%;
+    }
+
+    .progress { padding: 20px 26px 4px; }
+    .progress-track {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .progress-step { position: relative; }
+    .progress-line {
+      height: 3px;
+      background: #171b25;
+      border-radius: 5px;
+      margin-bottom: 9px;
+      overflow: hidden;
+    }
+    .progress-line div {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #3b82f6, #60a5fa);
+      transition: .5s;
+    }
+    .progress-step.active .progress-line div { width: 100%; }
+    .progress-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: #5d6577;
+    }
+    .progress-step.active .progress-label { color: #b6c3ed; }
+
+    .form-area { padding: 22px 26px 28px; }
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 21px;
+      padding: 20px;
+      background: rgba(255,255,255,.018);
+    }
+    .step+.step { margin-top: 12px; }
+    .step.disabled { opacity: .38; pointer-events: none; }
+    .step-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 18px;
+    }
+    .step-number {
+      font-size: 9px;
+      color: #7487c4;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .step h3 { font-size: 15px; margin-top: 5px; font-weight: 600; }
+    .step-desc {
+      color: #555e71;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+    .step-check {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: #111722;
+      color: #50586b;
+    }
+    .step-check.done { background: rgba(45,212,123,.1); color: var(--green); }
+
+    .field { margin-top: 13px; }
+    .field label {
+      display: block;
+      color: #788196;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 7px;
+    }
+    .input {
+      min-height: 49px;
+      border: 1px solid var(--line);
+      background: #080a0f;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      padding: 0 6px 0 14px;
+      transition: .2s;
+    }
+    .input:focus-within {
+      border-color: rgba(59,130,246,.5);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.07);
+    }
+    .input svg {
+      width: 16px;
+      color: #596276;
+      margin-right: 9px;
+      flex-shrink: 0;
+    }
+    .input input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: white;
+      font-size: 13px;
+    }
+    .input input::placeholder { color: #3f4655; }
+    .input-actions { display: flex; }
+    .input-actions button {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      border: 0;
+      border-radius: 9px;
+      color: #596276;
+    }
+    .input-actions button:hover {
+      color: white;
+      background: rgba(255,255,255,.05);
+    }
+    .error {
+      color: #ff6c76;
+      font-size: 10px;
+      margin-top: 6px;
+    }
+
+    .action {
+      margin-top: 15px;
+      width: 100%;
+      min-height: 48px;
+      border: 0;
+      border-radius: 14px;
+      color: white;
+      background: linear-gradient(100deg, #3b82f6, #1d4ed8);
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      box-shadow: 0 10px 30px rgba(59,130,246,.16);
+      transition: .2s;
+    }
+    .action:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 35px rgba(59,130,246,.24);
+    }
+    .action:disabled { opacity: .45; cursor: not-allowed; }
+    .step-status {
+      min-height: 18px;
+      color: #626b7e;
+      font-size: 10px;
+      margin-top: 8px;
+    }
+
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      background: rgba(10,12,18,.78);
+      border-radius: 23px;
+      padding: 20px;
+    }
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .panel-title h3 { font-size: 13px; font-weight: 600; }
+    .panel-title span { color: #4e5668; font-size: 9px; }
+
+    .status-main {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 14px;
+      border-radius: 15px;
+      background: rgba(255,255,255,.025);
+    }
+    .big-status {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: #151924;
+      color: #596275;
+    }
+    .big-status.success { color: var(--green); background: rgba(45,212,123,.08); }
+    .big-status.error { color: var(--red); background: rgba(255,92,103,.08); }
+    .big-status.processing { color: var(--yellow); background: rgba(245,196,81,.08); }
+    .status-main strong { display: block; font-size: 12px; }
+    .status-main small {
+      color: #596275;
+      font-size: 10px;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .logs {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    .log {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,.035);
+    }
+    .log:last-child { border-bottom: 0; }
+    .log-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #12151d;
+      color: #5f687b;
+      flex-shrink: 0;
+    }
+    .log-text { min-width: 0; }
+    .log-text strong {
+      display: block;
+      color: #aeb6c8;
+      font-size: 10px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .log-text span {
+      display: block;
+      color: #4d5567;
+      font-size: 9px;
+      margin-top: 3px;
+    }
+
+    .security-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+    .security-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #777f91;
+      font-size: 10px;
+    }
+    .security-item svg { color: #3b82f6; width: 15px; }
+
+    .footer {
+      margin-top: 35px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      color: #444c5e;
+      font-size: 10px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+    .footer-links button {
+      border: 0;
+      background: none;
+      color: #626a7b;
+      font-size: 10px;
+    }
+
+    .toast-container {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      width: min(370px, calc(100vw - 40px));
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 14px;
+      border-radius: 14px;
+      background: rgba(15,18,25,.96);
+      border: 1px solid var(--line2);
+      box-shadow: 0 20px 50px rgba(0,0,0,.45);
+      color: #dce2f0;
+      font-size: 11px;
+      animation: toastIn .25s ease;
+    }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error { border-left: 3px solid var(--red); }
+    .toast.info { border-left: 3px solid var(--blue); }
+    .toast button {
+      margin-left: auto;
+      background: none;
+      border: 0;
+      color: #626a7d;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(12px);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      z-index: 10000;
+    }
+    .modal.hidden { display: none; }
+    .modal-box {
+      width: min(500px, 100%);
+      background: #0c0f16;
+      border: 1px solid var(--line2);
+      border-radius: 23px;
+      padding: 23px;
+      box-shadow: 0 40px 100px rgba(0,0,0,.65);
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .modal-head h3 { font-size: 15px; }
+    .modal-close {
+      border: 0;
+      background: none;
+      color: #687184;
+    }
+    .modal-body {
+      color: #747d91;
+      line-height: 1.7;
+      font-size: 11px;
+    }
+
+    .hidden { display: none !important; }
+    .spinner { animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media(max-width:1050px) {
+      .sidebar { width: 210px; }
+      .main { padding-left: 24px; padding-right: 24px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-stats { max-width: 600px; }
+      .workspace { grid-template-columns: 1fr; }
+      .side-panel { display: grid; grid-template-columns: 1fr 1fr; }
+    }
+    @media(max-width:760px) {
+      .sidebar { display: none; }
+      .main { padding: 15px 15px 35px; }
+      .mobile-header { display: flex; }
+      .topbar { display: none; }
+      .hero { margin-bottom: 20px; }
+      .hero h1 { font-size: 39px; letter-spacing: -2px; }
+      .hero p { font-size: 12px; }
+      .hero-stats { grid-template-columns: repeat(3,1fr); }
+      .stat { padding: 13px; }
+      .stat strong { font-size: 16px; }
+      .workspace { display: block; }
+      .side-panel { display: flex; margin-top: 15px; }
+      .activation-head { padding: 19px; }
+      .progress { padding: 17px 19px 3px; }
+      .form-area { padding: 18px 15px 20px; }
+      .step { padding: 16px; }
+      .session-badge { display: none; }
+      .footer { flex-direction: column; }
+    }
+    @media(max-width:430px) {
+      .hero h1 { font-size: 34px; }
+      .hero-stats { gap: 6px; }
+      .stat { border-radius: 13px; }
+      .stat span { font-size: 8px; }
+      .stat strong { font-size: 14px; }
+      .mobile-profile .name { display: none; }
+      .mobile-music .track { max-width: 50px; font-size: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== VIDEO BACKGROUND ===== -->
+  <div class="video-bg-wrap">
+    <video autoplay muted loop playsinline preload="auto">
+      <source src="https://files.catbox.moe/qb58pm.mp4" type="video/mp4" />
+    </video>
+  </div>
+  <div class="video-overlay"></div>
+  <div class="background-grid"></div>
+
+  <!-- ===== APP ===== -->
+  <div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+
+      <div class="logo">
+        <div class="logo-mark"><i data-lucide="layers"></i></div>
+        <div class="logo-text">
+          <strong>Alight Motion</strong>
+          <span>Pusat Premium</span>
+        </div>
+      </div>
+
+      <!-- ===== PROFIL (avatar diperbesar, lapk3s.jpeg) ===== -->
+      <div class="dev-profile-wrap">
+        <button class="dev-profile-btn" id="devProfileBtn">
+          <div class="dev-avatar">
+            <img src="https://files.catbox.moe/lapk3s.jpeg" alt="KEENAN" />
+          </div>
+          <div class="dev-info">
+            <strong>KEENAN</strong>
+            <span>✦ Pengembang</span>
+          </div>
+          <span class="arrow">▾</span>
+        </button>
+        <div class="dev-dropdown" id="devDropdown">
+          <a href="https://keenandev.my.id" target="_blank" rel="noopener noreferrer">
+            <i data-lucide="briefcase" size="16"></i> Portofolio Dev
+          </a>
+        </div>
+      </div>
+
+      <div class="menu-title">Ruang Kerja</div>
+      <nav class="nav">
+        <button class="active" data-target="activationArea">
+          <i data-lucide="layout-dashboard"></i> Dasbor
+        </button>
+        <button data-target="activationArea">
+          <i data-lucide="key-round"></i> Aktivasi
+        </button>
+        <button data-target="statusArea">
+          <i data-lucide="activity"></i> Status
+        </button>
+        <button data-target="securityArea">
+          <i data-lucide="shield-check"></i> Keamanan
+        </button>
+      </nav>
+
+      <div class="menu-title">Sistem</div>
+      <nav class="nav">
+        <button id="resetNav"><i data-lucide="rotate-ccw"></i> Reset Sesi</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <!-- ===== MUSIC CONTROL ===== -->
+        <div class="music-control" id="musicControl">
+          <button id="musicToggle">
+            <span class="music-btn-icon" id="musicIconText">▶</span>
+          </button>
+          <span class="track-name" id="trackName">🎵 Lagu 1</span>
+          <button id="musicNext"><i data-lucide="skip-forward" size="14"></i></button>
+        </div>
+        <div class="api-mini">
+          <div class="api-mini-top">
+            <span>Status Layanan</span>
+            <span class="api-state">
+              <i class="api-dot" id="apiDot"></i>
+              <span id="apiLabel">Memeriksa</span>
+            </span>
+          </div>
+          <small id="apiEndpoint">API Aktivasi</small>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <main class="main">
+
+      <!-- ===== MOBILE HEADER (lapk3s.jpeg) ===== -->
+      <div class="mobile-header">
+        <div class="left">
+          <div class="logo-mark"><i data-lucide="layers" size="17"></i></div>
+          <span class="logo-text">Alight Motion</span>
+        </div>
+        <a class="mobile-profile" href="https://keenandev.my.id" target="_blank" rel="noopener noreferrer">
+          <div class="avatar">
+            <img src="https://files.catbox.moe/lapk3s.jpeg" alt="KEENAN" />
+          </div>
+          <span class="name">KEENAN</span>
+        </a>
+        <div class="mobile-music" id="mobileMusicControl">
+          <span class="track" id="mobileTrackName">🎵 Lagu 1</span>
+          <button id="mobileMusicToggle">
+            <span class="music-btn-icon" id="mobileMusicIconText">▶</span>
+          </button>
+          <button id="mobileMusicNext"><i data-lucide="skip-forward" size="12"></i></button>
+          <button class="top-button" id="mobileReset" style="width:32px;height:32px;border-radius:30px;border:1px solid var(--line);background:transparent;color:#81899c;display:grid;place-items:center;margin-left:2px;">
+            <i data-lucide="rotate-ccw" size="14"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===== TOPBAR ===== -->
+      <div class="topbar">
+        <div class="breadcrumb">Ruang Kerja / <strong>Aktivasi Premium</strong></div>
+        <div class="top-actions">
+          <button class="top-button" id="clearLogsBtn"><i data-lucide="trash-2" size="16"></i></button>
+          <button class="top-button" id="refreshApiBtn"><i data-lucide="refresh-cw" size="16"></i></button>
+        </div>
+      </div>
+
+      <!-- ===== HERO ===== -->
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow"><span></span>Pusat Aktivasi Aman</div>
+          <h1>Akses Premium, <em>tanpa ribet.</em></h1>
+          <p>Minta tautan ajaib, verifikasi akun yang sah, lalu selesaikan aktivasi Premium dalam satu ruang kerja terfokus.</p>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><span>Protokol</span><strong>HTTPS</strong></div>
+          <div class="stat"><span>Langkah</span><strong>02</strong></div>
+          <div class="stat"><span>Permintaan</span><strong id="requestCounter">0</strong></div>
+        </div>
+      </section>
+
+      <!-- ===== WORKSPACE ===== -->
+      <section class="workspace">
+
+        <div class="activation" id="activationArea">
+          <div class="activation-head">
+            <div class="activation-title">
+              <div class="activation-icon"><i data-lucide="key-round"></i></div>
+              <div>
+                <h2>Aktivasi Premium</h2>
+                <p>Alur aktivasi dua langkah</p>
+              </div>
+            </div>
+            <div class="session-badge"><i></i><span id="sessionText">Sesi siap</span></div>
+          </div>
+
+          <div class="progress">
+            <div class="progress-track">
+              <div class="progress-step active" id="progress1">
+                <div class="progress-line"><div></div></div>
+                <div class="progress-label"><span>01</span> Minta Tautan Ajaib</div>
+              </div>
+              <div class="progress-step" id="progress2">
+                <div class="progress-line"><div></div></div>
+                <div class="progress-label"><span>02</span> Terapkan Premium</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-area">
+            <!-- STEP 1 -->
+            <div class="step" id="step1Card">
+              <div class="step-header">
+                <div>
+                  <div class="step-number">LANGKAH 01</div>
+                  <h3>Minta Tautan Ajaib</h3>
+                  <p class="step-desc">Masukkan email akun Alight Motion yang sah.</p>
+                </div>
+                <div class="step-check" id="check1"><i data-lucide="circle" size="15"></i></div>
+              </div>
+              <div class="field">
+                <label>Alamat Email</label>
+                <div class="input">
+                  <i data-lucide="mail"></i>
+                  <input id="emailInput" type="email" autocomplete="off" placeholder="nama@contoh.com">
+                  <div class="input-actions">
+                    <button id="copyEmailBtn"><i data-lucide="copy" size="15"></i></button>
+                    <button id="clearEmailBtn"><i data-lucide="x" size="15"></i></button>
+                  </div>
+                </div>
+                <div class="error" id="emailError"></div>
+              </div>
+              <button class="action" id="requestLinkBtn">
+                <i data-lucide="send" size="16"></i> Minta Tautan Ajaib
+              </button>
+              <div class="step-status" id="step1Status"></div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="step disabled" id="step2Card">
+              <div class="step-header">
+                <div>
+                  <div class="step-number">LANGKAH 02</div>
+                  <h3>Terapkan Premium</h3>
+                  <p class="step-desc">Gunakan tautan ajaib yang diterima dari email.</p>
+                </div>
+                <div class="step-check" id="check2"><i data-lucide="circle" size="15"></i></div>
+              </div>
+              <div class="field">
+                <label>Alamat Email</label>
+                <div class="input">
+                  <i data-lucide="user"></i>
+                  <input id="emailStep2" type="email" autocomplete="off" placeholder="email@yang.diautorisasi">
+                </div>
+                <div class="error" id="emailStep2Error"></div>
+              </div>
+              <div class="field">
+                <label>Tautan Ajaib</label>
+                <div class="input">
+                  <i data-lucide="link"></i>
+                  <input id="magicLinkInput" type="password" autocomplete="off" placeholder="Tempel tautan ajaib di sini">
+                  <div class="input-actions">
+                    <button id="toggleMagicVisibility"><i data-lucide="eye" size="15"></i></button>
+                    <button id="copyMagicBtn"><i data-lucide="copy" size="15"></i></button>
+                    <button id="clearMagicBtn"><i data-lucide="x" size="15"></i></button>
+                  </div>
+                </div>
+                <div class="error" id="magicError"></div>
+              </div>
+              <button class="action" id="applyPremiumBtn">
+                <i data-lucide="shield-check" size="16"></i> Terapkan Premium
+              </button>
+              <div class="step-status" id="step2Status"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== SIDE PANEL ===== -->
+        <aside class="side-panel">
+          <div class="panel" id="statusArea">
+            <div class="panel-title">
+              <h3>Status Aktivasi</h3>
+              <span id="activationTimestamp">SIAP</span>
+            </div>
+            <div class="status-main">
+              <div class="big-status" id="bigStatus"><i data-lucide="clock-3"></i></div>
+              <div>
+                <strong id="statusLabel">Menunggu aktivasi</strong>
+                <small id="statusDetail">Belum ada permintaan aktivasi.</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              <h3>Aktivitas Terkini</h3>
+              <span id="logCount">0 KEJADIAN</span>
+            </div>
+            <div class="logs" id="activityLog">
+              <div class="log">
+                <div class="log-icon"><i data-lucide="terminal" size="13"></i></div>
+                <div class="log-text">
+                  <strong>Dasbor diinisialisasi</strong>
+                  <span>Menunggu tindakan pengguna</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" id="securityArea">
+            <div class="panel-title">
+              <h3>Keamanan</h3>
+              <span>TERLINDUNGI</span>
+            </div>
+            <div class="security-list">
+              <div class="security-item"><i data-lucide="lock"></i> Komunikasi API HTTPS</div>
+              <div class="security-item"><i data-lucide="eye-off"></i> Tidak meminta kata sandi</div>
+              <div class="security-item"><i data-lucide="shield"></i> Tautan ajaib hanya sekali pakai</div>
+              <div class="security-item"><i data-lucide="trash-2"></i> Tautan sensitif dibersihkan</div>
+            </div>
+          </div>
+        </aside>
+
+      </section>
+
+      <!-- ===== FOOTER ===== -->
+      <footer class="footer">
+        <div>Pusat Aktivasi Premium Alight Motion</div>
+        <div class="footer-links">
+          <button id="privacyLink">Privasi</button>
+          <button id="securityLink">Keamanan</button>
+          <button id="termsLink">Ketentuan</button>
+        </div>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ===== MODAL ===== -->
+  <div class="modal hidden" id="modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="modalTitle">Privasi</h3>
+        <button class="modal-close" id="modalClose"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== AUDIO ===== -->
+  <audio id="bgAudio" preload="auto" style="display:none;"></audio>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+      lucide.createIcons();
+
+      // ===== DROPDOWN PROFIL =====
+      const profileBtn = document.getElementById('devProfileBtn');
+      const dropdown = document.getElementById('devDropdown');
+      profileBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdown.classList.toggle('show');
+        profileBtn.classList.toggle('open');
+      });
+      document.addEventListener('click', function(e) {
+        if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+          dropdown.classList.remove('show');
+          profileBtn.classList.remove('open');
+        }
+      });
+      dropdown.querySelectorAll('a').forEach(function(item) {
+        item.addEventListener('click', function() {
+          dropdown.classList.remove('show');
+          profileBtn.classList.remove('open');
+        });
+      });
+
+      // ===== MUSIC PLAYLIST (2 lagu) =====
+      const playlist = [
+        { url: 'https://files.catbox.moe/nyahif.mp3', name: '🎵 Lagu 1' },
+        { url: 'https://files.catbox.moe/wbmeke.mp3', name: '🎵 Lagu 2' }
+      ];
+      let currentTrack = 0;
+      const audio = document.getElementById('bgAudio');
+      const trackName = document.getElementById('trackName');
+      const mobileTrackName = document.getElementById('mobileTrackName');
+
+      const musicIconText = document.getElementById('musicIconText');
+      const mobileMusicIconText = document.getElementById('mobileMusicIconText');
+
+      function updateMusicIcons() {
+        if (audio.paused) {
+          musicIconText.textContent = '▶';
+          mobileMusicIconText.textContent = '▶';
+        } else {
+          musicIconText.textContent = '⏸';
+          mobileMusicIconText.textContent = '⏸';
+        }
+      }
+
+      audio.addEventListener('play', updateMusicIcons);
+      audio.addEventListener('pause', updateMusicIcons);
+      audio.addEventListener('ended', function() {
+        currentTrack = (currentTrack + 1) % playlist.length;
+        loadTrack(currentTrack);
+        audio.play().catch(() => {});
+      });
+
+      function loadTrack(index) {
+        audio.src = playlist[index].url;
+        const name = playlist[index].name;
+        trackName.textContent = name;
+        mobileTrackName.textContent = name;
+        audio.load();
+        audio.addEventListener('loadedmetadata', updateMusicIcons, { once: true });
+      }
+
+      function toggleMusic() {
+        if (audio.paused) {
+          audio.play().catch(() => {});
+        } else {
+          audio.pause();
+        }
+        setTimeout(updateMusicIcons, 30);
+      }
+
+      function nextTrack() {
+        currentTrack = (currentTrack + 1) % playlist.length;
+        loadTrack(currentTrack);
+        audio.play().catch(() => {});
+        setTimeout(updateMusicIcons, 30);
+      }
+
+      document.getElementById('musicToggle').addEventListener('click', toggleMusic);
+      document.getElementById('musicNext').addEventListener('click', nextTrack);
+      document.getElementById('mobileMusicToggle').addEventListener('click', toggleMusic);
+      document.getElementById('mobileMusicNext').addEventListener('click', nextTrack);
+
+      loadTrack(0);
+      audio.play().catch(() => {});
+      setTimeout(updateMusicIcons, 100);
+      setInterval(updateMusicIcons, 1000);
+
+      // ===== API CONFIG =====
+      const API_MAGIC = "https://api.kyzznekoo.my.id/api/alightmotion/v3/magic-link?email=";
+      const API_PREMIUM = "https://api.kyzznekoo.my.id/api/alightmotion/v3/applyPremium?email=&link=";
+      const $ = id => document.getElementById(id);
+      const emailInput = $("emailInput");
+      const emailStep2 = $("emailStep2");
+      const magicLinkInput = $("magicLinkInput");
+      const step2Card = $("step2Card");
+      const progress2 = $("progress2");
+      const check1 = $("check1");
+      const check2 = $("check2");
+      const statusLabel = $("statusLabel");
+      const statusDetail = $("statusDetail");
+      const bigStatus = $("bigStatus");
+      const apiDot = $("apiDot");
+      const apiLabel = $("apiLabel");
+      const activityLog = $("activityLog");
+      const logCount = $("logCount");
+
+      let state = { email: "", magic: "", logs: [], requests: 0, step1: false, status: "idle" };
+      let requesting = false, applying = false;
+
+      function escapeHTML(str) {
+        return String(str).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+      }
+      function toast(message, type = "info") {
+        const box = document.createElement("div");
+        box.className = `toast ${type}`;
+        const iconMap = { success: "check-circle", error: "alert-circle", info: "info" };
+        box.innerHTML = `<i data-lucide="${iconMap[type]||'info'}" size="15"></i><span>${escapeHTML(message)}</span><button>&times;</button>`;
+        $("toastContainer").appendChild(box);
+        lucide.createIcons();
+        box.querySelector("button").onclick = () => box.remove();
+        setTimeout(() => { if (box.parentNode) box.remove(); }, 4500);
+      }
+      function addLog(text, detail = "Kejadian sistem") {
+        state.logs.push({ text, detail, time: new Date().toLocaleTimeString() });
+        if (state.logs.length > 30) state.logs.shift();
+        renderLogs();
+      }
+      function renderLogs() {
+        if (!state.logs.length) {
+          activityLog.innerHTML = `<div class="log"><div class="log-icon"><i data-lucide="terminal" size="13"></i></div><div class="log-text"><strong>Tidak ada aktivitas</strong><span>Menunggu tindakan</span></div></div>`;
+          lucide.createIcons();
+          logCount.textContent = "0 KEJADIAN";
+          return;
+        }
+        activityLog.innerHTML = state.logs.slice().reverse().map(log => `
+          <div class="log">
+            <div class="log-icon"><i data-lucide="activity" size="13"></i></div>
+            <div class="log-text">
+              <strong>${escapeHTML(log.text)}</strong>
+              <span>${escapeHTML(log.detail)} · ${escapeHTML(log.time)}</span>
+            </div>
+          </div>
+        `).join("");
+        logCount.textContent = `${state.logs.length} KEJADIAN`;
+        lucide.createIcons();
+      }
+      function setStatus(status, message) {
+        state.status = status;
+        bigStatus.className = "big-status";
+        if (status === "success") {
+          bigStatus.classList.add("success");
+          bigStatus.innerHTML = `<i data-lucide="check-circle"></i>`;
+          statusLabel.textContent = "Aktivasi Premium selesai";
+        } else if (status === "error") {
+          bigStatus.classList.add("error");
+          bigStatus.innerHTML = `<i data-lucide="alert-circle"></i>`;
+          statusLabel.textContent = "Aktivasi gagal";
+        } else if (status === "processing") {
+          bigStatus.classList.add("processing");
+          bigStatus.innerHTML = `<i data-lucide="loader" class="spinner"></i>`;
+          statusLabel.textContent = "Memproses aktivasi";
+        } else {
+          bigStatus.innerHTML = `<i data-lucide="clock-3"></i>`;
+          statusLabel.textContent = "Menunggu aktivasi";
+        }
+        statusDetail.textContent = message || "Belum ada permintaan aktivasi.";
+        lucide.createIcons();
+      }
+      function updateUI() {
+        if (state.step1) {
+          step2Card.classList.remove("disabled");
+          progress2.classList.add("active");
+          check1.classList.add("done");
+          check1.innerHTML = `<i data-lucide="check" size="15"></i>`;
+        } else {
+          step2Card.classList.add("disabled");
+          progress2.classList.remove("active");
+          check1.classList.remove("done");
+          check1.innerHTML = `<i data-lucide="circle" size="15"></i>`;
+        }
+        if (state.status === "success") {
+          check2.classList.add("done");
+          check2.innerHTML = `<i data-lucide="check" size="15"></i>`;
+        }
+        emailInput.value = state.email;
+        emailStep2.value = state.email;
+        magicLinkInput.value = state.magic;
+        $("requestCounter").textContent = state.requests;
+        lucide.createIcons();
+      }
+      async function readResponse(response) {
+        const type = response.headers.get("content-type") || "";
+        if (type.includes("application/json")) return await response.json();
+        return await response.text();
+      }
+      async function checkAPI() {
+        apiLabel.textContent = "Memeriksa";
+        try {
+          const res = await fetch(API_MAGIC + "health@example.com", { method: "GET", cache: "no-store" });
+          if (res.ok || res.status === 400 || res.status === 404) {
+            apiDot.className = "api-dot";
+            apiLabel.textContent = "Online";
+            return true;
+          }
+          throw new Error();
+        } catch {
+          apiDot.className = "api-dot offline";
+          apiLabel.textContent = "Offline";
+          return false;
+        }
+      }
+      async function requestMagicLink() {
+        if (requesting) return;
+        const email = emailInput.value.trim();
+        $("emailError").textContent = "";
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          $("emailError").textContent = "Masukkan alamat email yang valid.";
+          return;
+        }
+        requesting = true;
+        const button = $("requestLinkBtn");
+        button.disabled = true;
+        button.innerHTML = `<i data-lucide="loader" class="spinner" size="16"></i> Meminta...`;
+        lucide.createIcons();
+        const start = performance.now();
+        try {
+          const response = await fetch(API_MAGIC + encodeURIComponent(email), { method: "GET", cache: "no-store" });
+          const result = await readResponse(response);
+          state.requests++;
+          if (!response.ok) {
+            let msg = "Permintaan tautan ajaib gagal.";
+            if (response.status === 429) msg = "Terlalu banyak permintaan.";
+            if (response.status === 403) msg = "Akses ditolak.";
+            if (response.status === 400) msg = "Permintaan tidak valid.";
+            throw new Error(msg);
+          }
+          state.email = email;
+          state.step1 = true;
+          const duration = ((performance.now() - start) / 1000).toFixed(1);
+          setStatus("idle", "Tautan ajaib diminta. Lanjut ke langkah 2.");
+          addLog("Tautan ajaib diminta", `Respons ${duration} detik`);
+          $("step1Status").textContent = `Permintaan selesai dalam ${duration} detik`;
+          $("sessionText").textContent = "Langkah 1 selesai";
+          toast("Permintaan tautan ajaib selesai.", "success");
+          emailStep2.value = email;
+          updateUI();
+          step2Card.scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch (error) {
+          addLog("Permintaan tautan ajaib gagal", error.message);
+          $("step1Status").textContent = error.message;
+          toast(error.message, "error");
+        } finally {
+          requesting = false;
+          button.disabled = false;
+          button.innerHTML = `<i data-lucide="send" size="16"></i> Minta Tautan Ajaib`;
+          lucide.createIcons();
+        }
+      }
+      async function applyPremium() {
+        if (applying) return;
+        const email = emailStep2.value.trim();
+        const link = magicLinkInput.value.trim();
+        $("emailStep2Error").textContent = "";
+        $("magicError").textContent = "";
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          $("emailStep2Error").textContent = "Masukkan alamat email yang valid.";
+          return;
+        }
+        if (!link || link.length < 10) {
+          $("magicError").textContent = "Masukkan tautan ajaib.";
+          return;
+        }
+        applying = true;
+        const button = $("applyPremiumBtn");
+        button.disabled = true;
+        button.innerHTML = `<i data-lucide="loader" class="spinner" size="16"></i> Menerapkan...`;
+        lucide.createIcons();
+        setStatus("processing", "Mengirim permintaan aktivasi...");
+        addLog("Permintaan aktivasi dikirim", "Memproses");
+        try {
+          const url = "https://api.kyzznekoo.my.id/api/alightmotion/v3/applyPremium?email=" + encodeURIComponent(email) + "&link=" + encodeURIComponent(link);
+          const start = performance.now();
+          const response = await fetch(url, { method: "GET", cache: "no-store" });
+          const result = await readResponse(response);
+          state.requests++;
+          if (!response.ok) {
+            let msg = "Permintaan aktivasi ditolak.";
+            if (response.status === 429) msg = "Terlalu banyak permintaan.";
+            else if (response.status === 403) msg = "Permintaan tidak sah.";
+            else if (response.status === 404) msg = "Tautan ajaib atau endpoint tidak valid.";
+            else if (response.status === 400) msg = "Parameter tidak valid.";
+            throw new Error(msg);
+          }
+          let success = false;
+          let message = "Aktivasi selesai.";
+          if (typeof result === "object" && result) {
+            success = result.success === true || result.status === "success";
+            if (result.message) message = result.message;
+          } else {
+            const text = String(result);
+            message = text;
+            success = /success|completed|activated/i.test(text);
+          }
+          const duration = ((performance.now() - start) / 1000).toFixed(1);
+          if (success) {
+            setStatus("success", message);
+            $("step2Status").textContent = `${message} · ${duration} detik`;
+            $("activationTimestamp").textContent = new Date().toLocaleTimeString();
+            $("sessionText").textContent = "Aktivasi selesai";
+            addLog("Aktivasi Premium selesai", `Respons ${duration} detik`);
+            toast("Aktivasi Premium selesai.", "success");
+          } else {
+            setStatus("error", message);
+            $("step2Status").textContent = message;
+            addLog("Aktivasi mengembalikan hasil tidak berhasil", message);
+            toast(message, "error");
+          }
+        } catch (error) {
+          setStatus("error", error.message);
+          $("step2Status").textContent = error.message;
+          addLog("Aktivasi gagal", error.message);
+          toast(error.message, "error");
+        } finally {
+          applying = false;
+          button.disabled = false;
+          button.innerHTML = `<i data-lucide="shield-check" size="16"></i> Terapkan Premium`;
+          state.magic = "";
+          magicLinkInput.value = "";
+          updateUI();
+          lucide.createIcons();
+        }
+      }
+      function resetSession() {
+        state = { email: "", magic: "", logs: [], requests: 0, step1: false, status: "idle" };
+        ["emailError","emailStep2Error","magicError","step1Status","step2Status"].forEach(id => $(id).textContent = "");
+        $("activationTimestamp").textContent = "SIAP";
+        $("sessionText").textContent = "Sesi siap";
+        setStatus("idle", "Belum ada permintaan aktivasi.");
+        addLog("Sesi direset", "Ruang kerja dibersihkan");
+        updateUI();
+        toast("Sesi telah direset.", "info");
+      }
+
+      // ===== EVENT BINDINGS =====
+      emailInput.addEventListener("input", () => { state.email = emailInput.value; emailStep2.value = emailInput.value; });
+      emailStep2.addEventListener("input", () => { state.email = emailStep2.value; });
+      magicLinkInput.addEventListener("input", () => { state.magic = magicLinkInput.value; });
+      $("requestLinkBtn").onclick = requestMagicLink;
+      $("applyPremiumBtn").onclick = applyPremium;
+      $("copyEmailBtn").onclick = async () => { if (!emailInput.value) return; try { await navigator.clipboard.writeText(emailInput.value); toast("Email disalin.", "info"); } catch {} };
+      $("clearEmailBtn").onclick = () => { state.email = ""; emailInput.value = ""; emailStep2.value = ""; };
+      $("copyMagicBtn").onclick = async () => { if (!magicLinkInput.value) return; try { await navigator.clipboard.writeText(magicLinkInput.value); toast("Tautan ajaib disalin.", "info"); } catch {} };
+      $("clearMagicBtn").onclick = () => { state.magic = ""; magicLinkInput.value = ""; };
+      $("toggleMagicVisibility").onclick = () => {
+        const visible = magicLinkInput.type === "text";
+        magicLinkInput.type = visible ? "password" : "text";
+        $("toggleMagicVisibility").innerHTML = `<i data-lucide="${visible ? 'eye' : 'eye-off'}" size="15"></i>`;
+        lucide.createIcons();
+      };
+      $("clearLogsBtn").onclick = () => { state.logs = []; renderLogs(); toast("Log aktivitas dibersihkan.", "info"); };
+      $("refreshApiBtn").onclick = async () => { await checkAPI(); toast("Status API diperbarui.", "info"); };
+      $("resetNav").onclick = resetSession;
+      $("mobileReset").onclick = resetSession;
+      document.querySelectorAll(".nav button[data-target]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".nav button").forEach(x => x.classList.remove("active"));
+          btn.classList.add("active");
+          const target = $(btn.dataset.target);
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      });
+
+      // ===== MODAL =====
+      function openModal(title, body) { $("modalTitle").textContent = title; $("modalBody").textContent = body; $("modal").classList.remove("hidden"); }
+      function closeModal() { $("modal").classList.add("hidden"); }
+      $("modalClose").onclick = closeModal;
+      $("modal").onclick = e => { if (e.target === $("modal")) closeModal(); };
+      $("privacyLink").onclick = () => openModal("Privasi", "Antarmuka ini tidak menyimpan email atau tautan ajaib secara permanen. Permintaan aktivasi dikirim ke API yang dikonfigurasi.");
+      $("securityLink").onclick = () => openModal("Keamanan", "Antarmuka tidak meminta kata sandi akun. Tautan ajaib dibersihkan dari antarmuka setelah proses aktivasi selesai.");
+      $("termsLink").onclick = () => openModal("Ketentuan", "Gunakan layanan aktivasi hanya dengan akun dan tautan ajaib yang Anda miliki izinnya. Ketersediaan dan hasil aktivasi ditentukan oleh API yang dikonfigurasi.");
+
+      // ===== KEYBOARD =====
+      emailInput.addEventListener("keydown", e => { if (e.key === "Enter") requestMagicLink(); });
+      emailStep2.addEventListener("keydown", e => { if (e.key === "Enter") applyPremium(); });
+      magicLinkInput.addEventListener("keydown", e => { if (e.key === "Enter") applyPremium(); });
+      document.addEventListener("keydown", e => {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "r") { e.preventDefault(); if (confirm("Reset sesi aktivasi saat ini?")) resetSession(); }
+        if (e.key === "Escape") $("modal").classList.add("hidden");
+      });
+
+      // ===== INIT =====
+      addLog("Dasbor diinisialisasi", "Ruang kerja aktivasi siap");
+      setStatus("idle", "Belum ada permintaan aktivasi.");
+      updateUI();
+      checkAPI();
+
+    });
+  </script>
+
+</body>
+</html>
